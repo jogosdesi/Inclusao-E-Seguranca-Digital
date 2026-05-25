@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Missão SI+ - Tecnologia, Inclusão e Segurança</title>
+<style>
+body{
+margin:0;
+font-family:Arial,Helvetica,sans-serif;
+background:linear-gradient(135deg,#0f172a,#1e3a8a);
+color:white;
+display:flex;
+align-items:center;
+justify-content:center;
+min-height:100vh;
+padding:20px;
+}
+.container{
+width:100%;
+max-width:900px;
+background:rgba(255,255,255,0.08);
+padding:25px;
+border-radius:20px;
+backdrop-filter:blur(10px);
+}
+h1{color:#38bdf8}
+.status{display:flex;justify-content:space-between;margin:15px 0;padding:10px;background:rgba(255,255,255,0.08);border-radius:10px}
+.question{font-size:1.3rem;margin:15px 0}
+.answers{display:grid;gap:10px}
+button{padding:14px;border:none;border-radius:12px;cursor:pointer}
+.answer{background:rgba(255,255,255,0.1);color:white;text-align:left}
+.answer:hover{background:rgba(56,189,248,0.3)}
+.correct{background:#16a34a !important}
+.wrong{background:#dc2626 !important}
+.info{margin-top:15px;padding:15px;background:rgba(255,255,255,0.08);border-left:4px solid #38bdf8;display:none}
+.next{margin-top:15px;width:100%;background:#38bdf8;color:#0f172a;font-weight:bold;display:none}
+.final{text-align:center;display:none}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div id="game">
+<h1>🎮 Missão SI+ </h1>
+<p>Aprenda sobre Sistemas de Informação, inclusão digital e segurança online.</p>
+
+<div class="status">
+<span>Fase: <span id="phase">1</span>/15</span>
+<span>Pontos: <span id="score">0</span></span>
+</div>
+
+<div class="question" id="question"></div>
+<div class="answers" id="answers"></div>
+
+<div class="info" id="info"></div>
+<button class="next" id="next">Próxima</button>
+</div>
+
+<div class="final" id="final">
+<h2>🏆 Parabéns!</h2>
+<p id="result"></p>
+<button onclick="restart()">Jogar novamente</button>
+</div>
+
+</div>
+
+<script>
+const questions=[
+{
+q:"O que é um Sistema de Informação (SI)?",
+a:[
+{t:"Um celular moderno",c:false},
+{t:"Conjunto de hardware, software, dados, pessoas e processos que gerenciam informações",c:true},
+{t:"Uma rede social",c:false},
+{t:"Apenas o computador físico",c:false}
+],i:"SI integra tecnologia e pessoas para organizar e transformar dados em informação útil."
+},
+{
+q:"Função principal de um Sistema de Informação?",
+a:[
+{t:"Destruir dados antigos",c:false},
+{t:"Transformar dados em informações úteis para decisões",c:true},
+{t:"Jogar online",c:false},
+{t:"Criar apenas planilhas pessoais",c:false}
+],i:"SI apoia decisões estratégicas em empresas e organizações."
+},
+{
+q:"Como SI ajuda na inclusão de pessoas com deficiência (PCD)?",
+a:[
+{t:"Criando barreiras digitais",c:false},
+{t:"Desenvolvendo tecnologias acessíveis como leitores de tela e sistemas adaptados",c:true},
+{t:"Ignorando acessibilidade",c:false},
+{t:"Limitando o uso da internet",c:false}
+],i:"SI promove acessibilidade digital e inclusão social."
+},
+{
+q:"Exemplo de tecnologia inclusiva para PCD?",
+a:[
+{t:"Leitor de tela",c:true},
+{t:"Jogos offline apenas",c:false},
+{t:"Antivírus simples",c:false},
+{t:"Computador sem internet",c:false}
+],i:"Leitores de tela ajudam pessoas com deficiência visual a navegar em sistemas."
+},
+{
+q:"Como SI pode ajudar na educação?",
+a:[
+{t:"Organizando dados escolares e plataformas de ensino",c:true},
+{t:"Apenas imprimindo livros",c:false},
+{t:"Proibindo tecnologia",c:false},
+{t:"Substituindo professores",c:false}
+],i:"Plataformas digitais melhoram acesso ao conhecimento."
+},
+{
+q:"O que são golpes digitais?",
+a:[
+{t:"Jogos online",c:false},
+{t:"Fraudes que tentam roubar dados ou dinheiro das pessoas",c:true},
+{t:"Aplicativos de estudo",c:false},
+{t:"Sites de notícias",c:false}
+],i:"Golpes digitais usam engenharia social para enganar usuários."
+},
+{
+q:"Como se proteger de golpes online?",
+a:[
+{t:"Clicar em qualquer link",c:false},
+{t:"Desconfiar de links suspeitos e não compartilhar dados pessoais",c:true},
+{t:"Compartilhar senhas",c:false},
+{t:"Usar redes públicas sem cuidado",c:false}
+],i:"Segurança digital começa com atenção e boas práticas."
+},
+{
+q:"Exemplo de golpe digital comum?",
+a:[
+{t:"Phishing (falsos e-mails ou mensagens)”,c:true},
+{t:"Aula online",c:false},
+{t:"Videochamada",c:false},
+{t:"Planilha de dados",c:false}
+],i:"Phishing tenta enganar usuários para roubar informações."
+},
+{
+q:"Qual atitude é segura ao receber mensagens suspeitas?",
+a:[
+{t:"Abrir imediatamente",c:false},
+{t:"Ignorar ou verificar a fonte antes de clicar",c:true},
+{t:"Responder com dados pessoais",c:false},
+{t:"Repassar para todos",c:false}
+],i:"Sempre verifique a autenticidade da mensagem."
+},
+{
+q:"Qual área NÃO faz parte de Sistemas de Informação?",
+a:[
+{t:"Programação",c:false},
+{t:"Banco de dados",c:false},
+{t:"Culinária profissional",c:true},
+{t:"Segurança digital",c:false}
+],i:"SI envolve tecnologia e gestão da informação."
+},
+{
+q:"Qual linguagem é comum em SI?",
+a:[
+{t:"Python",c:true},
+{t:"Linguagem de sinais apenas",c:false},
+{t:"Latim",c:false},
+{t:"Hieróglifos",c:false}
+],i:"Python é muito usada em análise de dados e sistemas."
+},
+{
+q:"O que é banco de dados?",
+a:[
+{t:"Local de armazenamento organizado de informações",c:true},
+{t:"Um jogo online",c:false},
+{t:"Rede social",c:false},
+{t:"Antivírus",c:false}
+],i:"Bancos de dados armazenam informações estruturadas."
+},
+{
+q:"Como SI ajuda empresas?",
+a:[
+{t:"Organizando informações e ajudando decisões",c:true},
+{t:"Apenas decorando arquivos",c:false},
+{t:"Impedindo comunicação",c:false},
+{t:"Criando redes sociais pessoais",c:false}
+],i:"Empresas usam SI para eficiência e estratégia."
+},
+{
+q:"Qual prática ajuda na segurança offline e online?",
+a:[
+{t:"Compartilhar senha com amigos",c:false},
+{t:"Manter atenção a documentos e não expor dados pessoais",c:true},
+{t:"Ignorar segurança",c:false},
+{t:"Usar qualquer computador público sem cuidado",c:false}
+],i:"Segurança também envolve cuidado no mundo físico."
+},
+{
+q:"Por que SI é importante hoje?",
+a:[
+{t:"Porque organiza o mundo digital e melhora a vida das pessoas",c:true},
+{t:"Porque substitui todas as profissões",c:false},
+{t:"Porque serve apenas para jogos",c:false},
+{t:"Porque não tem impacto real",c:false}
+],i:"SI está presente em praticamente todos os setores da sociedade."
+}
+];
+
+let index=0,score=0;
+const q=document.getElementById("question");
+const a=document.getElementById("answers");
+const i=document.getElementById("info");
+const next=document.getElementById("next");
+
+function load(){
+let c=questions[index];
+document.getElementById("phase").innerText=index+1;
+q.innerText=c.q;
+a.innerHTML="";
+i.style.display="none";
+next.style.display="none";
+
+c.a.forEach(r=>{
+let b=document.createElement("button");
+b.className="answer";
+b.innerText=r.t;
+if(r.c)b.dataset.c="true";
+b.onclick=select;
+a.appendChild(b);
+});
+}
+
+function select(e){
+let b=e.target;
+let ok=b.dataset.c=="true";
+if(ok){b.classList.add("correct");score+=10;}
+else b.classList.add("wrong");
+
+Array.from(a.children).forEach(x=>{
+if(x.dataset.c)x.classList.add("correct");
+x.disabled=true;
+});
+
+i.style.display="block";
+i.innerHTML="💡 "+questions[index].i;
+next.style.display="block";
+document.getElementById("score").innerText=score;
+}
+
+next.onclick=()=>{
+index++;
+if(index<questions.length)load();
+else end();
+};
+
+function end(){
+document.getElementById("game").style.display="none";
+document.getElementById("final").style.display="block";
+document.getElementById("result").innerText=
+"Pontuação: "+score+". Você concluiu a Missão SI+!";
+}
+
+function restart(){location.reload();}
+
+load();
+</script>
+
+</body>
+</html>
